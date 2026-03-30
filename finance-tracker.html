@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Tracker — Olivia Shuter</title>
+    <style>
+        :root{--black:#0a0a0a;--white:#fff;--pink:#e6007e;--grey:#666;--grey-light:#e0e0e0;--font:"Helvetica Neue", Helvetica, Arial, sans-serif}*{margin:0;padding:0;box-sizing:border-box}body{font-family:var(--font);background:var(--white);color:var(--black);-webkit-font-smoothing:antialiased}::selection{background:var(--pink);color:var(--white)}a{color:var(--black)}a:hover{color:var(--pink)}.page{max-width:860px;margin:0 auto;padding:0 60px}.back{display:inline-block;padding:48px 0 0;font-size:.9rem;font-weight:700;text-decoration:none;color:var(--grey)}.back:hover{color:var(--pink)}.hero{padding:60px 0 48px}.hero-num{font-size:.85rem;font-weight:700;color:var(--pink);margin-bottom:12px}.hero h1{font-size:clamp(2rem,4.5vw,3rem);font-weight:800;line-height:1.15;letter-spacing:-.02em;margin-bottom:20px}.hero .subtitle{font-size:1.1rem;line-height:1.7;color:var(--grey);max-width:650px}hr.divider{border:none;border-top:1.5px solid var(--grey-light);margin:0}.content{padding:48px 0 80px}.content h2{font-size:1.6rem;font-weight:800;letter-spacing:-.02em;margin:48px 0 16px}.content h2:first-child{margin-top:0}.content p{font-size:1rem;line-height:1.8;color:var(--grey);margin-bottom:16px}.content p strong{color:var(--black);font-weight:700}.callout{padding:24px 0;border-top:1.5px solid var(--pink);margin:32px 0;font-size:1.05rem;line-height:1.7;font-weight:700;color:var(--black)}.tags{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0}.tag{font-size:.78rem;font-weight:700;padding:4px 12px;border:1.5px solid var(--black);border-radius:999px}.features{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1.5px solid var(--grey-light);margin:24px 0}.feature{padding:24px 0;padding-right:24px;border-bottom:1.5px solid var(--grey-light)}.feature:nth-child(even){padding-left:24px;padding-right:0;border-left:1.5px solid var(--grey-light)}.feature-title{font-weight:800;font-size:.95rem;margin-bottom:6px}.feature-desc{font-size:.88rem;color:var(--grey);line-height:1.6}.project-nav{display:flex;justify-content:space-between;padding:40px 0;border-top:2px solid var(--black)}.project-nav a{font-weight:700;font-size:.9rem;text-decoration:none;color:var(--grey)}.project-nav a:hover{color:var(--pink)}@media(max-width:600px){.page{padding:0 28px}.features{grid-template-columns:1fr}.feature{padding-left:0!important;border-left:none!important}}
+    </style>
+</head>
+<body>
+<div class="page">
+    <a href="index.html" class="back">← Back</a>
+    <section class="hero">
+        <div class="hero-num">In Progress</div>
+        <h1>Personal Finance Tracker</h1>
+        <p class="subtitle">A personal Django web app for personal and joint finances. I have little front-end experience so I have been using this project as a learning tool. Born from the frustration of existing apps not handling shared expenses or an overview of investments properly!</p>
+    </section>
+    <hr class="divider">
+    <div class="content">
+        <h2>Features</h2>
+        <div class="features">
+            <div class="feature">
+                <div class="feature-title">Bank-specific Import</div>
+                <div class="feature-desc">Bank-specific parsers for Lloyds, Santander, Amex with upload, preview, confirm workflow.</div>
+            </div>
+            <div class="feature">
+                <div class="feature-title">Auto-Categorisation</div>
+                <div class="feature-desc">Rule-based merchant matching assigns categories automatically on import.</div>
+            </div>
+            <div class="feature">
+                <div class="feature-title">Dashboard</div>
+                <div class="feature-desc">Chart.js visualisation: spending by category, monthly trends, income vs expenditure.</div>
+            </div>
+            <div class="feature">
+                <div class="feature-title">Drilldowns</div>
+                <div class="feature-desc">Click any category to see individual transactions grouped by category with month filtering.</div>
+            </div>
+        </div>
+
+        <h2>Architecture</h2>
+        <p>Django structure: single core app with Account, Category, and Transaction models. Bank-specific CSV parsing isolated from the shared import flow.</p>
+
+
+
+        <h2>Roadmap</h2>
+        <p>Duplicate detection, merchant normalisation, recurring transaction support, savings goals, and budgeting features. The project is actively maintained and evolving as my personal finances do so too!</p>
+    </div>
+    <div class="project-nav">
+        <a href="index.html">← All Projects</a>
+    </div>
+</div>
+</body>
+</html>

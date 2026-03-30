@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Olivia Shuter</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/three@0.161.0/build/three.min.js"></script>
+    <style>
+        :root {
+            --black: #0a0a0a;
+            --white: #ffffff;
+            --pink: #e6007e;
+            --grey: #666;
+            --grey-light: #e0e0e0;
+            --font: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font);
+            font-weight: 700;
+            background: var(--white);
+            color: var(--black);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        ::selection {
+            background: var(--pink);
+            color: var(--white);
+        }
+
+        a { color: var(--black); }
+        a:hover { color: var(--pink); }
+
+ 
+
+        /* LAYOUT */
+        .page {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 60px;
+        }
+
+        /* NAV */
+        nav {
+            position: fixed;
+            top: 0;
+            right: 0;
+            padding: 48px 60px;
+            z-index: 100;
+        }
+        .nav-name {
+            font-size: 1.35rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+        .nav-links a {
+            display: block;
+            font-size: 1.9rem;
+            line-height: 1.7;
+            font-weight: 700;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            text-decoration-thickness: 2px;
+            line-height: 1.6;
+        }
+
+        /* HERO */
+        .hero {
+            position: relative;
+            isolation: isolate;
+            overflow: hidden;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            width: 100vw;
+            margin-left: calc(50% - 50vw);
+            margin-right: calc(50% - 50vw);
+            padding: 120px 0 150px;
+            background: linear-gradient(180deg, rgba(255, 48, 146, 0.28) 0%, rgba(121, 72, 255, 0.22) 24%, rgba(64, 140, 255, 0.18) 46%, rgba(255, 255, 255, 1) 100%);
+        }
+        .hero-inner {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 60px;
+        }
+        .hero-canvas {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+            background:
+                radial-gradient(circle at 14% 14%, rgba(255, 33, 133, 0.98), rgba(255, 33, 133, 0) 34%),
+                radial-gradient(circle at 82% 18%, rgba(33, 136, 255, 0.96), rgba(33, 136, 255, 0) 40%),
+                radial-gradient(circle at 54% 34%, rgba(154, 84, 255, 0.88), rgba(154, 84, 255, 0) 42%),
+                radial-gradient(circle at 48% 64%, rgba(53, 209, 255, 0.34), rgba(53, 209, 255, 0) 34%),
+                linear-gradient(145deg, rgba(255, 44, 151, 0.28) 0%, rgba(136, 86, 255, 0.2) 46%, rgba(38, 136, 255, 0.16) 74%, rgba(255, 255, 255, 0) 100%);
+        }
+        .hero-canvas canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            background:
+                radial-gradient(circle at 30% 22%, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0) 30%),
+                linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 42%, rgba(255, 255, 255, 0.12) 100%);
+            backdrop-filter: blur(4px);
+        }
+        .hero::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 34%;
+            z-index: 1;
+            pointer-events: none;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.5) 48%, rgba(255, 255, 255, 0.88) 72%, rgba(255, 255, 255, 0.98) 86%, rgba(255, 255, 255, 1) 100%);
+        }
+        .hero-text {
+            position: relative;
+            max-width: 750px;
+            font-size: clamp(2rem, 4.5vw, 3.2rem);
+            font-weight: 800;
+            line-height: 1.25;
+            letter-spacing: -0.02em;
+            text-wrap: balance;
+            color: var(--black);
+            text-shadow: 0 1px 20px rgba(255, 255, 255, 0.18);
+        }
+        .hero-text .accent {
+            color: var(--black);
+        }
+        .hero-text .indent {
+            padding-left: 2.5em;
+        }
+
+        /* DIVIDER */
+        .divider {
+            border: none;
+            border-top: 2px solid var(--black);
+            margin: 0;
+        }
+        .hero + .divider {
+            display: none;
+        }
+
+        /* PROJECTS SECTION */
+        .section-header {
+            padding: 80px 0 48px;
+        }
+        .section-header h2 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+        }
+
+        /* PROJECT LIST */
+        .project-list {
+            padding-bottom: 80px;
+        }
+        .project-subsection {
+            padding-bottom: 32px;
+        }
+        .project-subheading {
+            font-size: 1.99rem;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            margin-bottom: 20px;
+            color:  #ff7a00;
+}
+        .project-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            padding: 48px 0;
+            border-top: 1.5px solid var(--grey-light);
+            text-decoration: none;
+            color: var(--black);
+            transition: background 0.2s;
+        }
+        .project-item:last-child {
+            border-bottom: 1.5px solid var(--grey-light);
+        }
+        .project-item:hover {
+            background: #fafafa;
+        }
+        .project-item:hover .project-title {
+            color: var(--pink);
+        }
+        .project-item:hover .tag {
+            color: #ff7a00;
+        }
+
+        .project-num {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--pink);
+            margin-bottom: 12px;
+        }
+        .project-title {
+            font-size: clamp(1.5rem, 3vw, 2.2rem);
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            margin-bottom: 16px;
+            transition: color 0.25s;
+        }
+        .project-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .tag {
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            color: var(--black);
+            border: 1.5px solid var(--black);
+            border-radius: 999px;
+        }
+        .project-desc {
+            font-size: 1.02rem;
+            line-height: 1.7;
+            color: var(--grey);
+            font-weight: 400;
+        }
+        .project-stat {
+            margin-top: 20px;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--pink);
+            letter-spacing: -0.02em;
+        }
+        .project-stat-label {
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: var(--grey);
+        }
+        /* CERTIFICATIONS STRIP */
+        .cert-strip {
+            overflow: hidden;
+            padding: 18px 0;
+            background: var(--white);
+        }
+
+        .cert-track {
+            display: flex;
+            width: max-content;
+            gap: 14px;
+            animation: scroll-certs 70s linear infinite;
+        }
+
+        .cert-strip:hover .cert-track {
+            animation-play-state: paused;
+        }
+
+        .cert-item {
+            flex-shrink: 0;
+            font-size: 0.9rem;
+            font-weight: 700;
+            padding: 8px 16px;
+            border: 1.5px solid var(--black);
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        @keyframes scroll-certs {
+            from {
+                transform: translateX(0);
+            }
+            to {
+                transform: translateX(-50%);
+            }
+        }
+        /* SKILLS */
+        .skills-section {
+            padding: 80px 0;
+        }
+        .skills-section h2 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 48px;
+        }
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 48px;
+        }
+        .skill-group-title {
+            font-size: 1rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+            color: var(--pink);
+        }
+        .skill-group p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--grey);
+        }
+
+        /* ABOUT */
+        .about-section {
+            padding: 80px 0;
+        }
+        .about-section h2 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 48px;
+        }
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 80px;
+        }
+        .about-text {
+            font-size: 1.35rem;
+            font-weight: 800;
+            line-height: 1.4;
+            letter-spacing: -0.01em;
+        }
+        .about-text .accent { color: var(--pink); }
+
+        .timeline-item {
+            padding: 12px 0 18px;
+            border-top: none;
+        }
+        .timeline-item:last-child {
+            border-bottom: none;
+        }
+        .timeline-year {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--pink);
+            margin-bottom: 4px;
+        }
+        .timeline-title {
+            font-size: 1rem;
+            font-weight: 800;
+        }
+        .timeline-title a {
+            text-decoration: none;
+        }
+        .timeline-title a:hover {
+            color: var(--pink);
+        }
+        .timeline-desc {
+            font-size: 0.88rem;
+            color: var(--grey);
+            margin-top: 2px;
+        }
+
+        /* FOOTER */
+        footer {
+            padding: 60px 0;
+            border-top: 2px solid var(--black);
+        }
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .footer-email {
+            font-size: 1.3rem;
+            font-weight: 800;
+            text-decoration: none;
+            color: var(--black);
+        }
+        .footer-email:hover { color: var(--pink); }
+        .footer-links {
+            display: flex;
+            gap: 24px;
+        }
+        .footer-links a {
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .page { padding: 0 28px; }
+            nav { padding: 28px; position: relative; text-align: right; }
+            .hero { min-height: calc(100vh - 32px); padding: 72px 0 108px; }
+            .hero-inner { padding: 0 28px; }
+            .hero::after { height: 30%; }
+            .hero::before { background: linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.05) 42%, rgba(255, 255, 255, 0.22) 100%); }
+            .hero-text { max-width: 100%; font-size: clamp(1.8rem, 8vw, 2.8rem); line-height: 1.2; }
+            .project-item { grid-template-columns: 1fr; gap: 20px; }
+            .skills-grid { grid-template-columns: 1fr; gap: 32px; }
+            .about-grid { grid-template-columns: 1fr; gap: 40px; }
+            .footer-content { flex-direction: column; gap: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+
+<nav>
+    <div class="nav-links">
+        <a href="#work">Work</a>
+        <a href="#about">About</a>
+        <a href="mailto:oliviashuter@icloud.com">Contact</a>
+    </div>
+</nav>
+
+<div class="page">
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-canvas" aria-hidden="true"></div>
+        <div class="hero-inner">
+            <div class="hero-text">
+                <span class="accent">Hi, I'm Olivia -</span>
+                Physics graduate from the University of Liverpool with an interest in applied data science + machine learning.
+                <span>See my work below:</span>
+            </div>
+        </div>
+    </section>
+
+    <hr class="divider">
+<!-- ABOUT -->
+<section id="about" class="about-section">
+    <h2>About</h2>
+    <div class="about-grid">
+        <div class="about-text">
+            <span class="accent">MPhys Physics, First Class Honours</span> from the University of Liverpool. Winner of the HWB Skinner Prize for the highest graded final-year project.
+        </div>
+        <div>
+            <div class="timeline-item">
+                <div class="timeline-title">
+                    <a href="https://github.com/livshu" target="_blank" rel="noopener noreferrer">↗ GitHub</a>
+                </div>
+                <div class="timeline-desc">Projects and repositories</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-title">
+                    <a href="https://linkedin.com/in/oliviagshuter" target="_blank" rel="noopener noreferrer">↗ LinkedIn</a>
+                </div>
+                <div class="timeline-desc">Professional profile</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-title">
+                    <a href="https://www.liverpool.ac.uk/liverpool-women-in-science-and-engineering/role-models/physics/olivia-shuter/" target="_blank" rel="noopener noreferrer">↗ LivWiSE</a>
+                </div>
+                <div class="timeline-desc">Profile and feature page</div>
+            </div>
+        </div>
+    </div>
+</section>
+    <!-- WORK -->
+    <section id="work">
+        <div class="section-header">
+            <h2>Projects</h2>
+        </div>
+
+        <div class="project-subsection">
+            <div class="project-subheading">Academic Projects</div>
+            <div class="project-list">
+
+            <a href="cancer-diagnostics.html" class="project-item">
+                <div>
+                    <!-- <div class="project-num">01</div> -->
+                    <div class="project-title">Machine Learning as a Diagnostic Tool for Oral Cancer Classification</div>
+                    <div class="project-tags">
+                        <span class="tag">Deep Learning</span>
+                        <span class="tag">Model Optimisation</span>
+                        <span class="tag">Clinical Application</span>
+                    </div>
+                </div>
+                <div>
+                    <p class="project-desc">
+                        Can the glass slides used in clinical practice provide sufficient contrast for accurate machine learning classification, matching the performance previously achieved on Calcium Fluoride substrates?
+                    </p>
+                
+                </div>
+            </a>
+
+            <a href="atlas-anomaly.html" class="project-item">
+                <div>
+                    <!-- <div class="project-num">02</div> -->
+                    <div class="project-title">Search for Beyond Standard Model Events using Anomaly Detection Techniques</div>
+                    <div class="project-tags">
+                        <span class="tag">Deep Learning</span>
+                        <span class="tag">Autoencoders</span>
+                        <span class="tag">High Energy Physics</span>
+                    </div>
+                </div>
+                <div>
+                    <p class="project-desc">
+                        The ATLAS project at CERN produces petabytes of data (per day!). Could the answer to many of Physics' open questions lie within the data already collected? 
+                    </p>
+
+                </div>
+            </a>
+
+            <a href="juno.html" class="project-item">
+                <div>
+                    <!-- <div class="project-num">03</div> -->
+                    <div class="project-title">JUNO Reactor Neutrino Experiment</div>
+                    <div class="project-tags">
+                        <span class="tag">Neutrino Physics</span>
+                        <span class="tag">Review</span>
+                    </div>
+                </div>
+                <div>
+                    <p class="project-desc">
+                        Literature review of JUNO's approach to determining the neutrino mass hierarchy—one of the most pressing open questions in fundamental physics.
+                    </p>
+
+                </div>
+            </a>
+
+            <a href="satellite-ml.html" class="project-item">
+                <div>
+                    <div class="project-title">Unsupervised ML for Satellite Image Classification</div>
+                    <div class="project-tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">Scikit-learn</span>
+                        <span class="tag">K-means</span>
+                    </div>
+                </div>
+                <div>
+                    <p class="project-desc">
+                        Can unsupervised ML read a disaster from space in real time?
+                    </p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="project-subsection">
+        <div class="project-subheading">Personal Projects</div>
+        <div class="project-list">
+            <a href="finance-tracker.html" class="project-item">
+                <div>
+                    <!-- <div class="project-num">07</div> -->
+                    <div class="project-title">Personal Finance Tracker</div>
+                    <div class="project-tags">
+                        <span class="tag">Django</span>
+                        <span class="tag">Python</span>
+                        <span class="tag">Full-stack</span>
+                    </div>
+                </div>
+                <div>
+                    <p class="project-desc">
+                        Django web app for personal and joint finances. Incl CSV imports, auto-categorisation, interactive Chart.js dashboards.
+                    </p>
+     
+                </div>
+            </a>
+
+        </div>
+    </section>
+
+    <div class="section-header" style="padding: 56px 0 24px;">
+        <h2 style="font-size: clamp(2.5rem, 5vw, 4rem);">Certifications</h2>
+    </div>
+    <section class="cert-strip" aria-label="Certifications">
+        <div class="cert-track">
+            <span class="cert-item">Assessing the Cybersecurity of New or Existing IACS Systems</span>
+            <span class="cert-item">Cisco Certified Support Technician Cybersecurity</span>
+            <span class="cert-item">Supervised Machine Learning: Regression and Classification</span>
+            <span class="cert-item">Tweet Emotion Recognition with TensorFlow</span>
+            <span class="cert-item">MLOps Concepts</span>
+            <span class="cert-item">Supervised Learning with Scikit-Learn</span>
+            <span class="cert-item">ISA/IEC 62443 Cybersecurity Fundamentals Specialist (CFS)</span>
+            <span class="cert-item">Certified in Cybersecurity (CC)</span>
+            <span class="cert-item">Data Manipulation with Pandas</span>
+            <span class="cert-item">Intermediate Python</span>
+            <span class="cert-item">Networking Basics</span>
+            <span class="cert-item">ISA/IEC 62443 to Secure Control Systems</span>
+            <span class="cert-item">Intermediate SQL for Data Scientists</span>
+            <span class="cert-item">Practical Python for Algorithmic Trading</span>
+            <span class="cert-item">ISC2 Certified in Cybersecurity (CC) Cert Prep</span>
+            <span class="cert-item">Introduction to the Threat Landscape 3.0</span>
+            <span class="cert-item">Google AI Essentials</span>
+            <span class="cert-item">Breast Cancer Prediction Using Machine Learning</span>
+            <span class="cert-item">Introduction to Corporate Finance</span>
+            <span class="cert-item">Dimensionality Reduction using an Autoencoder in Python</span>
+
+            <span class="cert-item">Assessing the Cybersecurity of New or Existing IACS Systems</span>
+            <span class="cert-item">Cisco Certified Support Technician Cybersecurity</span>
+            <span class="cert-item">Supervised Machine Learning: Regression and Classification</span>
+            <span class="cert-item">Tweet Emotion Recognition with TensorFlow</span>
+            <span class="cert-item">MLOps Concepts</span>
+            <span class="cert-item">Supervised Learning with Scikit-Learn</span>
+            <span class="cert-item">ISA/IEC 62443 Cybersecurity Fundamentals Specialist (CFS)</span>
+            <span class="cert-item">Certified in Cybersecurity (CC)</span>
+            <span class="cert-item">Data Manipulation with Pandas</span>
+            <span class="cert-item">Intermediate Python</span>
+            <span class="cert-item">Networking Basics</span>
+            <span class="cert-item">ISA/IEC 62443 to Secure Control Systems</span>
+            <span class="cert-item">Intermediate SQL for Data Scientists</span>
+            <span class="cert-item">Practical Python for Algorithmic Trading</span>
+            <span class="cert-item">ISC2 Certified in Cybersecurity (CC) Cert Prep</span>
+            <span class="cert-item">Introduction to the Threat Landscape 3.0</span>
+            <span class="cert-item">Google AI Essentials</span>
+            <span class="cert-item">Breast Cancer Prediction Using Machine Learning</span>
+            <span class="cert-item">Introduction to Corporate Finance</span>
+            <span class="cert-item">Dimensionality Reduction using an Autoencoder in Python</span>
+        </div>
+    </section>
+    <!-- SKILLS -->
+    <section class="skills-section">
+        <h2>Skills</h2>
+        <div class="skills-grid">
+            <div class="skill-group">
+                <div class="skill-group-title">ML & Data Science</div>
+                <p>PyTorch, TensorFlow/Keras, Scikit-learn, MLPs, autoencoders, anomaly detection, clustering, feature engineering, model evaluation.</p>
+            </div>
+            <div class="skill-group">
+                <div class="skill-group-title">Programming</div>
+                <p>Python, NumPy, Pandas, Matplotlib, LaTeX.</p>
+            </div>
+            <div class="skill-group">
+                <div class="skill-group-title">Analysis</div>
+                <p>Confidence intervals, uncertainty analysis, ROC/AUC, cross-validation.</p>
+            </div>
+        </div>
+    </section>
+
+    <hr class="divider">
+
+
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-content">
+            <a href="mailto:oliviashuter@icloud.com" class="footer-email">oliviashuter@icloud.com</a>
+            <div class="footer-links">
+                <a href="https://linkedin.com/in/oliviagshuter" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                <a href="https://github.com/livshu" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </div>
+        </div>
+    </footer>
+
+</div>
+
+<script>
+    (() => {
+        const hero = document.querySelector(".hero");
+        const canvasHost = document.querySelector(".hero-canvas");
+
+        if (!hero || !canvasHost || typeof THREE === "undefined") {
+            return;
+        }
+
+        const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+        let renderer;
+
+        try {
+            renderer = new THREE.WebGLRenderer({
+                alpha: true,
+                antialias: true,
+                powerPreference: "high-performance"
+            });
+        } catch (error) {
+            return;
+        }
+
+        renderer.setClearColor(0x000000, 0);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
+        canvasHost.appendChild(renderer.domElement);
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+
+        const uniforms = {
+            uTime: { value: 0 },
+            uResolution: { value: new THREE.Vector2(1, 1) },
+            uMouse: { value: new THREE.Vector2(0.5, 0.45) },
+            uMouseTarget: { value: new THREE.Vector2(0.5, 0.45) },
+            uColorA: { value: new THREE.Color("#ff2f86") },
+            uColorB: { value: new THREE.Color("#b786ff") },
+            uColorC: { value: new THREE.Color("#3d82ff") },
+            uColorD: { value: new THREE.Color("#f7f0ff") },
+            uMotion: { value: prefersReducedMotion.matches ? 0.25 : 1.0 }
+        };
+
+        const material = new THREE.ShaderMaterial({
+            uniforms,
+            transparent: true,
+            vertexShader: `
+                varying vec2 vUv;
+
+                void main() {
+                    vUv = uv;
+                    gl_Position = vec4(position.xy, 0.0, 1.0);
+                }
+            `,
+            fragmentShader: `
+                precision highp float;
+
+                varying vec2 vUv;
+
+                uniform float uTime;
+                uniform float uMotion;
+                uniform vec2 uResolution;
+                uniform vec2 uMouse;
+                uniform vec3 uColorA;
+                uniform vec3 uColorB;
+                uniform vec3 uColorC;
+                uniform vec3 uColorD;
+
+                float hash(vec2 p) {
+                    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+                }
+
+                float noise(vec2 p) {
+                    vec2 i = floor(p);
+                    vec2 f = fract(p);
+                    vec2 u = f * f * (3.0 - 2.0 * f);
+
+                    return mix(
+                        mix(hash(i + vec2(0.0, 0.0)), hash(i + vec2(1.0, 0.0)), u.x),
+                        mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x),
+                        u.y
+                    );
+                }
+
+                float fbm(vec2 p) {
+                    float value = 0.0;
+                    float amplitude = 0.5;
+
+                    for (int i = 0; i < 5; i++) {
+                        value += amplitude * noise(p);
+                        p = p * 2.0 + vec2(13.1, 7.3);
+                        amplitude *= 0.5;
+                    }
+
+                    return value;
+                }
+
+                vec2 rotate(vec2 p, float angle) {
+                    float s = sin(angle);
+                    float c = cos(angle);
+                    return mat2(c, -s, s, c) * p;
+                }
+
+                void main() {
+                    vec2 uv = vUv;
+                    vec2 aspect = vec2(uResolution.x / max(uResolution.y, 1.0), 1.0);
+                    vec2 p = (uv - 0.5) * aspect;
+
+                    float t = uTime * 0.17 * uMotion;
+                    vec2 mouse = (uMouse - 0.5) * vec2(aspect.x, 1.0);
+                    vec2 autoDrift = vec2(sin(t * 0.95), cos(t * 0.72)) * 0.11;
+                    vec2 drift = mouse * 0.18 + autoDrift;
+
+                    vec2 flow = p;
+                    flow += 0.22 * vec2(
+                        fbm(rotate(p * 1.28 + vec2(t * 0.8, -t * 0.28), 0.52)),
+                        fbm(rotate(p * 1.12 + vec2(-t * 0.36, t * 0.76), -0.44))
+                    );
+                    flow += 0.06 * vec2(
+                        sin((p.y + t * 0.5) * 5.2),
+                        cos((p.x - t * 0.34) * 5.8)
+                    );
+
+                    vec2 q = rotate(flow + drift, -0.56);
+                    float baseField = fbm(q * 2.1 + vec2(t * 0.68, -t * 0.32));
+                    float detailField = fbm(rotate(q * 3.1, 0.28) + vec2(-t * 0.54, t * 0.42));
+                    float swirl = sin(q.x * 3.2 + q.y * 2.4 - t * 2.0) * 0.12 + cos(q.y * 4.8 + t * 1.35) * 0.08;
+
+                    float magentaMask = smoothstep(0.18, 0.82, baseField + swirl + 0.12);
+                    float violetMask = smoothstep(0.22, 0.86, detailField + baseField * 0.4);
+                    float blueMask = smoothstep(0.2, 0.84, fbm(rotate(q * 2.6, -0.42) + vec2(t * 0.58, -t * 0.48)) - swirl + 0.08);
+                    float cyanMask = smoothstep(0.46, 0.88, fbm(q * 3.6 + vec2(-t * 0.92, t * 0.34)) + 0.06);
+
+                    float topBias = 1.0 - smoothstep(0.18, 0.9, uv.y);
+                    float upperFocus = smoothstep(0.0, 0.58, 1.0 - uv.y);
+
+                    vec3 color = mix(uColorD, vec3(1.0), smoothstep(0.52, 1.0, uv.y) * 0.42);
+                    color = mix(color, uColorA, magentaMask * 0.86 * upperFocus);
+                    color = mix(color, uColorB, violetMask * 0.72 * upperFocus);
+                    color = mix(color, uColorC, blueMask * 0.88 * (0.45 + topBias * 0.55));
+                    color += vec3(0.18, 0.85, 1.0) * cyanMask * 0.12 * upperFocus;
+
+                    float glow1 = 1.0 - smoothstep(0.0, 0.86, length(p - vec2(-0.32, -0.18) - drift * 0.28));
+                    float glow2 = 1.0 - smoothstep(0.0, 0.88, length(p - vec2(0.38, -0.12) + drift * 0.32));
+                    float glow3 = 1.0 - smoothstep(0.0, 0.66, length(p - vec2(0.02, 0.02) + drift * 0.18));
+
+                    color += uColorA * glow1 * 0.18 * upperFocus;
+                    color += uColorC * glow2 * 0.2 * upperFocus;
+                    color += uColorB * glow3 * 0.12 * upperFocus;
+
+                    float topLight = smoothstep(-0.15, 0.6, uv.y) * 0.03;
+                    float bottomWash = smoothstep(0.34, 1.0, uv.y) * 0.34;
+                    color = mix(color, vec3(1.0), topLight + bottomWash);
+
+                    color = clamp(color, 0.0, 1.0);
+                    gl_FragColor = vec4(color, 0.96);
+                }
+            `
+        });
+
+        const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
+        scene.add(mesh);
+
+        const pointer = uniforms.uMouseTarget.value;
+        const currentMouse = uniforms.uMouse.value;
+        let rafId = 0;
+        let startTime = performance.now();
+
+        const resize = () => {
+            const width = Math.max(hero.clientWidth, 1);
+            const height = Math.max(hero.clientHeight, 1);
+            renderer.setSize(width, height, false);
+            uniforms.uResolution.value.set(width, height);
+        };
+
+        const updatePointer = (clientX, clientY) => {
+            const rect = hero.getBoundingClientRect();
+            pointer.x = (clientX - rect.left) / rect.width;
+            pointer.y = 1 - (clientY - rect.top) / rect.height;
+        };
+
+        const handlePointerMove = (event) => {
+            updatePointer(event.clientX, event.clientY);
+        };
+
+        const handlePointerLeave = () => {
+            pointer.set(0.5, 0.45);
+        };
+
+        const render = (now) => {
+            const elapsed = (now - startTime) * 0.001;
+            uniforms.uTime.value = elapsed;
+            currentMouse.lerp(pointer, prefersReducedMotion.matches ? 0.04 : 0.06);
+            renderer.render(scene, camera);
+            rafId = window.requestAnimationFrame(render);
+        };
+
+        let resizeObserver = null;
+
+        if (typeof ResizeObserver === "function") {
+            resizeObserver = new ResizeObserver(resize);
+            resizeObserver.observe(hero);
+        } else {
+            window.addEventListener("resize", resize);
+        }
+
+        hero.addEventListener("pointermove", handlePointerMove);
+        hero.addEventListener("pointerleave", handlePointerLeave);
+
+        const handleReducedMotionChange = (event) => {
+            uniforms.uMotion.value = event.matches ? 0.25 : 1.0;
+        };
+
+        if (typeof prefersReducedMotion.addEventListener === "function") {
+            prefersReducedMotion.addEventListener("change", handleReducedMotionChange);
+        } else if (typeof prefersReducedMotion.addListener === "function") {
+            prefersReducedMotion.addListener(handleReducedMotionChange);
+        }
+
+        resize();
+        rafId = window.requestAnimationFrame(render);
+
+        window.addEventListener("beforeunload", () => {
+            window.cancelAnimationFrame(rafId);
+            if (resizeObserver) {
+                resizeObserver.disconnect();
+            } else {
+                window.removeEventListener("resize", resize);
+            }
+            hero.removeEventListener("pointermove", handlePointerMove);
+            hero.removeEventListener("pointerleave", handlePointerLeave);
+            if (typeof prefersReducedMotion.removeEventListener === "function") {
+                prefersReducedMotion.removeEventListener("change", handleReducedMotionChange);
+            } else if (typeof prefersReducedMotion.removeListener === "function") {
+                prefersReducedMotion.removeListener(handleReducedMotionChange);
+            }
+            renderer.dispose();
+            material.dispose();
+            mesh.geometry.dispose();
+        }, { once: true });
+</script>
+
+
+</body>
+</html>
